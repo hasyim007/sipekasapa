@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konsultasi Masuk - SIPEKA SAPA</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
+                    colors: {
+                        primary: '#F97316', 'primary-dark': '#EA580C', 'primary-light': '#FFEDD5',
+                        navy: '#123B78', 'navy-light': '#1B4B8F', 'navy-dark': '#0C2A57',
+                        surface: '#F8FAFC', success: '#16A34A', warning: '#F59E0B', danger: '#DC2626'
+                    },
+                    boxShadow: {
+                        soft: '0 4px 24px -4px rgba(18,59,120,0.10), 0 2px 8px -2px rgba(18,59,120,0.06)',
+                        glass: '0 8px 32px rgba(18,59,120,0.18)'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="antialiased text-slate-800">
+
+    <div class="h-screen w-full flex flex-row bg-surface">
+        <div id="admin-sidebar-container"></div>
+
+        <main class="flex-1 min-w-0 h-full overflow-y-auto relative">
+            <div class="pt-20 px-6 pb-6 md:p-8 max-w-7xl mx-auto">
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-navy">Konsultasi Masuk</h2>
+                        <p class="text-slate-500">Daftar pertanyaan dan konsultasi dari pengguna.</p>
+                    </div>
+                </div>
+                <div class="glass-panel rounded-2xl overflow-hidden shadow-sm">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-navy/5 text-navy text-sm border-b border-slate-200">
+                                    <th class="p-4 font-semibold w-16">No</th>
+                                    <th class="p-4 font-semibold">Tanggal</th>
+                                    <th class="p-4 font-semibold">Nama / Status / Kontak</th>
+                                    <th class="p-4 font-semibold w-2/5">Pesan Konsultasi</th>
+                                    <th class="p-4 font-semibold">Status</th>
+                                    <th class="p-4 font-semibold text-center w-24">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Tindak Lanjut Modal -->
+    <div id="tindak-lanjut-modal" class="fixed inset-0 z-[150] flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-navy-dark/50 backdrop-blur-sm" onclick="closeTindakLanjutModal()"></div>
+        <div class="glass-panel relative z-10 w-full max-w-lg p-8 rounded-3xl shadow-glass slide-up mx-4">
+            <button onclick="closeTindakLanjutModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700"><i data-lucide="x" class="w-5 h-5"></i></button>
+            <h3 class="text-xl font-bold text-navy mb-4">Tindak Lanjut Laporan</h3>
+            <form id="tindakLanjutForm" onsubmit="handleTindakLanjutSubmit(event)" class="space-y-4">
+                <input type="hidden" id="tl-id">
+                <div>
+                    <label class="text-sm font-semibold text-slate-700">Status Penyelesaian</label>
+                    <select id="tl-status" class="w-full px-4 py-3 mt-1 rounded-xl border border-slate-200 bg-white/50 focus:bg-white focus:ring-2 focus:ring-primary outline-none transition-all">
+                        <option value="Baru">Baru</option>
+                        <option value="Diproses">Diproses</option>
+                        <option value="Selesai">Selesai</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-sm font-semibold text-slate-700">Catatan / Tanggapan Admin</label>
+                    <textarea id="tl-catatan" rows="4" class="w-full px-4 py-3 mt-1 rounded-xl border border-slate-200 bg-white/50 focus:bg-white focus:ring-2 focus:ring-primary outline-none transition-all resize-none" placeholder="Tuliskan proses atau hasil tindak lanjut..."></textarea>
+                </div>
+                <button type="submit" class="w-full bg-primary hover:bg-primary-dark text-white py-3 rounded-xl font-bold transition-all shadow-soft flex justify-center items-center gap-2">
+                    <i data-lucide="save" class="w-5 h-5"></i> Simpan
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/common.js"></script>
+    <script>
+        const JENIS_HALAMAN = 'Konsultasi';
+        requireAdminAuth();
+        renderAdminSidebar('konsultasi');
+
+        let laporanData = [];
+
+        async function loadData() {
+            showPageLoading('Mengambil data dari server...');
+            try {
+                const result = await apiGet('listLaporan');
+                hidePageLoading();
+                if (!result.success) { showToast('Gagal', result.message, true); return; }
+                laporanData = result.data.filter(d => d.jenis === JENIS_HALAMAN);
+                renderTable();
+            } catch (err) {
+                hidePageLoading();
+                showToast('Gagal', err.message, true);
+            }
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+            if (laporanData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500 italic">Belum ada data tersedia.</td></tr>`;
+                return;
+            }
+            laporanData.forEach((item, index) => {
+                const badgeColor = statusBadgeClass(item.statusData);
+
+                const noWaStr = item.noWa !== null && item.noWa !== undefined ? String(item.noWa) : '';
+                const waClean = noWaStr ? noWaStr.replace(/[^0-9]/g, '') : '';
+                const waLink = noWaStr ? `<a href="https://wa.me/${waClean}" target="_blank" class="inline-flex items-center gap-1 mt-1 text-xs text-success hover:opacity-80 font-semibold bg-green-50 hover:bg-green-100 px-2.5 py-1 rounded-lg transition-colors border border-green-200/50">
+                    <i data-lucide="phone" class="w-3 h-3"></i> Hubungi via WA (${noWaStr})
+                </a>` : '-';
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition-colors";
+                tr.innerHTML = `
+                    <td class="p-4 border-b border-slate-100 text-sm text-slate-500">${index + 1}</td>
+                    <td class="p-4 border-b border-slate-100 text-sm text-slate-600 whitespace-nowrap">${formatDate(item.tanggal)}</td>
+                    <td class="p-4 border-b border-slate-100">
+                        <div class="font-bold text-slate-800 text-sm">${item.nama}</div>
+                        <div class="text-xs text-slate-500 mb-1.5">${item.statusUser}</div>
+                        ${waLink}
+                    </td>
+                    <td class="p-4 border-b border-slate-100 text-sm text-slate-600">
+                        <div class="line-clamp-2">${item.pesan}</div>
+                        ${item.tindakLanjut ? `<div class="mt-2 p-2 bg-primary-light/30 rounded-lg text-xs border border-primary-light text-slate-700"><span class="font-semibold text-primary-dark">Tanggapan:</span> ${item.tindakLanjut}</div>` : ''}
+                    </td>
+                    <td class="p-4 border-b border-slate-100">
+                        <span class="px-2.5 py-1 rounded-full text-xs font-bold ${badgeColor}">${item.statusData || 'Baru'}</span>
+                    </td>
+                    <td class="p-4 border-b border-slate-100 text-center">
+                        <div class="flex justify-center gap-1">
+                            <button onclick="openTindakLanjutModal('${item.id}')" class="p-2 text-slate-400 hover:text-primary hover:bg-primary-light/50 rounded-lg transition-colors" title="Tindak Lanjuti">
+                                <i data-lucide="edit-3" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="deleteData('${item.id}')" class="p-2 text-slate-400 hover:text-danger hover:bg-red-50 rounded-lg transition-colors" title="Hapus Data">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </td>`;
+                tbody.appendChild(tr);
+            });
+            lucide.createIcons();
+        }
+
+        function openTindakLanjutModal(id) {
+            const laporan = laporanData.find(d => d.id === id);
+            if (laporan) {
+                document.getElementById('tl-id').value = id;
+                document.getElementById('tl-status').value = laporan.statusData || 'Baru';
+                document.getElementById('tl-catatan').value = laporan.tindakLanjut || '';
+                document.getElementById('tindak-lanjut-modal').classList.remove('hidden');
+            }
+        }
+        function closeTindakLanjutModal() {
+            document.getElementById('tindak-lanjut-modal').classList.add('hidden');
+        }
+
+        async function handleTindakLanjutSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('tl-id').value;
+            const status = document.getElementById('tl-status').value;
+            const catatan = document.getElementById('tl-catatan').value;
+            try {
+                const result = await apiPost('updateTindakLanjut', { id, statusData: status, tindakLanjut: catatan });
+                if (result.success) {
+                    closeTindakLanjutModal();
+                    showToast('Tersimpan', 'Status dan catatan tindak lanjut berhasil diperbarui.');
+                    loadData();
+                } else {
+                    showToast('Gagal', result.message, true);
+                }
+            } catch (err) {
+                showToast('Gagal', err.message, true);
+            }
+        }
+
+        async function deleteData(id) {
+            if (!confirm('Yakin ingin menghapus data ini?')) return;
+            try {
+                const result = await apiPost('deleteLaporan', { id });
+                if (result.success) {
+                    showToast('Terhapus', 'Data berhasil dihapus dari sistem.');
+                    loadData();
+                } else {
+                    showToast('Gagal', result.message, true);
+                }
+            } catch (err) {
+                showToast('Gagal', err.message, true);
+            }
+        }
+
+        loadData();
+    </script>
+</body>
+</html>

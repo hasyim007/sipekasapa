@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIPEKA SAPA - Sistem Pengaduan &amp; Konsultasi SDN 01 Papahan</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
+                    colors: {
+                        primary: '#F97316', 'primary-dark': '#EA580C', 'primary-light': '#FFEDD5',
+                        navy: '#123B78', 'navy-light': '#1B4B8F', 'navy-dark': '#0C2A57',
+                        surface: '#F8FAFC', success: '#16A34A', warning: '#F59E0B', danger: '#DC2626'
+                    },
+                    boxShadow: {
+                        soft: '0 4px 24px -4px rgba(18,59,120,0.10), 0 2px 8px -2px rgba(18,59,120,0.06)',
+                        glass: '0 8px 32px rgba(18,59,120,0.18)'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="antialiased min-h-screen text-slate-800">
+
+    <div class="min-h-screen flex flex-col fade-in relative">
+
+        <!-- Navbar (Navy glassmorphism) -->
+        <nav class="glass-navbar sticky top-0 z-40 w-full py-3 sm:py-4 px-4 sm:px-6 flex justify-between items-center gap-2">
+            <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+                <div id="navbar-logo-box" class="w-9 h-9 sm:w-10 sm:h-10 shrink-0 bg-primary rounded-2xl flex items-center justify-center text-white font-bold shadow-soft overflow-hidden">
+                    <i data-lucide="message-square-heart" id="navbar-logo-icon" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+                    <img id="navbar-logo-img" src="" class="w-full h-full object-cover hidden" alt="Logo">
+                </div>
+                <div class="min-w-0">
+                    <h1 class="text-base sm:text-xl font-extrabold text-white leading-tight tracking-tight truncate">SIPEKA <span class="text-primary">SAPA</span></h1>
+                    <p class="hidden sm:block text-[11px] text-white/60 font-medium">Sistem Pengaduan &amp; Konsultasi SDN 01 Papahan</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 sm:gap-4 shrink-0">
+                <a href="lacak.html" class="text-white/80 hover:text-white font-semibold text-sm transition-colors flex items-center gap-1">
+                    <i data-lucide="search" class="w-4 h-4"></i> <span class="hidden md:inline">Cek Laporan</span>
+                </a>
+                <a href="galeri.html" class="text-white/80 hover:text-white font-semibold text-sm transition-colors flex items-center gap-1">
+                    <i data-lucide="images" class="w-4 h-4"></i> <span class="hidden md:inline">Galeri</span>
+                </a>
+                <a href="admin-login.html" class="text-white/50 hover:text-white/90 font-medium text-sm transition-colors flex items-center gap-1 sm:border-r sm:border-white/15 sm:pr-4" title="Login Admin">
+                    <i data-lucide="shield" class="w-4 h-4"></i> <span class="hidden md:inline">Admin</span>
+                </a>
+                <a href="form.html" class="bg-primary hover:bg-primary-dark text-white px-3 sm:px-5 py-2 rounded-full font-medium transition-all shadow-soft hover:shadow-glass flex items-center gap-1.5 sm:gap-2 text-sm whitespace-nowrap">
+                    <i data-lucide="edit-3" class="w-4 h-4"></i> <span class="hidden sm:inline">Buat Laporan</span><span class="sm:hidden">Lapor</span>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Landing Section -->
+        <main class="flex-grow flex items-center justify-center p-6 slide-up">
+            <div class="max-w-4xl w-full grid md:grid-cols-2 gap-12 items-center">
+                <div class="space-y-6">
+                    <div class="inline-block px-4 py-1.5 rounded-full bg-primary-light text-primary-dark text-sm font-semibold mb-2">
+                        Portal Resmi Sekolah
+                    </div>
+                    <h2 class="text-4xl md:text-5xl font-extrabold text-navy leading-tight">
+                        Suara Anda <br><span class="text-primary">Membangun Sekolah</span>
+                    </h2>
+                    <p class="text-slate-600 text-lg leading-relaxed text-justify">
+                        Selamat datang di <b>SIPEKA SAPA</b> — Sistem Pengaduan dan Konsultasi SDN 01 Papahan. Kami berkomitmen memberikan pelayanan pendidikan terbaik. Sampaikan konsultasi, saran, atau pengaduan Anda melalui portal ini untuk mewujudkan lingkungan belajar yang lebih baik.
+                    </p>
+                    <div class="flex gap-4 pt-4">
+                        <a href="form.html" class="bg-primary hover:bg-primary-dark text-white px-8 py-3.5 rounded-xl font-semibold transition-all shadow-glass hover:-translate-y-1 flex items-center gap-2 w-fit">
+                            Mulai Mengisi Form <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="hidden md:flex justify-center relative">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-navy/10 to-primary/10 rounded-full blur-3xl opacity-70 animate-pulse"></div>
+
+                    <div class="relative z-10 w-full max-w-md h-[420px] flex items-center justify-center">
+                        <!-- Cincin dekoratif putus-putus -->
+                        <div class="hero-ring-outer absolute w-[380px] h-[380px] rounded-full border-2 border-dashed border-navy/25"></div>
+                        <div class="hero-ring-inner absolute w-[300px] h-[300px] rounded-full border-2 border-dashed border-primary/30"></div>
+
+                        <!-- Logo tengah (mengambang) -->
+                        <div class="hero-float-logo relative z-20 w-32 h-32 rounded-full bg-white shadow-glass border border-white flex items-center justify-center overflow-hidden">
+                            <i data-lucide="message-square-heart" id="hero-logo-icon" class="w-14 h-14 text-primary"></i>
+                            <img id="hero-logo-img" src="" class="w-full h-full object-cover hidden" alt="Logo SIPEKA SAPA">
+                        </div>
+
+                        <!-- Badge mengambang -->
+                        <div class="hero-float-badge absolute top-2 left-0 z-20 bg-white rounded-xl shadow-glass pl-3 pr-4 py-2.5 flex items-center gap-2 border-l-4 border-navy" style="animation-delay:0s">
+                            <i data-lucide="alert-octagon" class="w-4 h-4 text-navy shrink-0"></i>
+                            <span class="text-xs sm:text-sm font-semibold text-navy whitespace-nowrap" id="hero-badge-0">Penyampaian Pengaduan</span>
+                        </div>
+
+                        <div class="hero-float-badge absolute top-24 right-0 z-20 bg-white rounded-xl shadow-glass pl-3 pr-4 py-2.5 flex items-center gap-2 border-l-4 border-primary" style="animation-delay:0.6s">
+                            <i data-lucide="lightbulb" class="w-4 h-4 text-primary shrink-0"></i>
+                            <span class="text-xs sm:text-sm font-semibold text-navy whitespace-nowrap" id="hero-badge-1">Penyampaian Aspirasi dan Saran</span>
+                        </div>
+
+                        <div class="hero-float-badge absolute top-[190px] left-[-24px] z-20 bg-white rounded-xl shadow-glass pl-3 pr-4 py-2.5 flex items-center gap-2 border-l-4 border-success" style="animation-delay:1.2s">
+                            <i data-lucide="message-circle" class="w-4 h-4 text-success shrink-0"></i>
+                            <span class="text-xs sm:text-sm font-semibold text-navy whitespace-nowrap" id="hero-badge-2">Konsultasi Permasalahan Sekolah</span>
+                        </div>
+
+                        <div class="hero-float-badge absolute bottom-16 right-[-12px] z-20 bg-white rounded-xl shadow-glass pl-3 pr-4 py-2.5 flex items-center gap-2 border-l-4 border-warning" style="animation-delay:1.8s">
+                            <i data-lucide="info" class="w-4 h-4 text-warning shrink-0"></i>
+                            <span class="text-xs sm:text-sm font-semibold text-navy whitespace-nowrap" id="hero-badge-3">Permintaan Informasi</span>
+                        </div>
+
+                        <div class="hero-float-badge absolute bottom-0 left-8 z-20 bg-white rounded-xl shadow-glass pl-3 pr-4 py-2.5 flex items-center gap-2 border-l-4 border-navy" style="animation-delay:2.4s">
+                            <i data-lucide="check-circle" class="w-4 h-4 text-navy shrink-0"></i>
+                            <span class="text-xs sm:text-sm font-semibold text-navy whitespace-nowrap" id="hero-badge-4">Tindak Lanjut Pengaduan</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="py-6 text-center text-slate-500 text-sm">
+            &copy; 2026 SIPEKA SAPA &mdash; SDN 01 Papahan. Hak Cipta Dilindungi.
+        </footer>
+    </div>
+
+    <script>lucide.createIcons();</script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script>
+        // Terapkan logo & teks badge dari Pengaturan (kalau sudah diisi admin).
+        // Kalau belum diisi / API belum siap, tampilan default di atas tetap dipakai.
+        (async function applyHeroConfig() {
+            try {
+                const result = await apiGet('getConfig');
+                if (!result.success || !result.data) return;
+                const cfg = result.data;
+
+                if (cfg.logoWebsite) {
+                    document.getElementById('navbar-logo-img').src = cfg.logoWebsite;
+                    document.getElementById('navbar-logo-img').classList.remove('hidden');
+                    document.getElementById('navbar-logo-icon').classList.add('hidden');
+
+                    document.getElementById('hero-logo-img').src = cfg.logoWebsite;
+                    document.getElementById('hero-logo-img').classList.remove('hidden');
+                    document.getElementById('hero-logo-icon').classList.add('hidden');
+                }
+
+                if (cfg.floatingItems) {
+                    const items = JSON.parse(cfg.floatingItems);
+                    items.forEach((label, i) => {
+                        const el = document.getElementById('hero-badge-' + i);
+                        if (el && label) el.innerText = label;
+                    });
+                }
+            } catch (e) { /* diamkan, pakai tampilan default */ }
+        })();
+    </script>
+</body>
+</html>

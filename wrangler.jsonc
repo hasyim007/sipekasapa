@@ -1,0 +1,30 @@
+{
+  "name": "sipekasapa",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-08-01",
+
+  // Halaman statis (HTML/CSS/JS) disajikan langsung dari folder public/.
+  // Request yang TIDAK cocok dengan file di public/ (misalnya path "/api")
+  // otomatis diteruskan ke Worker di src/worker.js.
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS"
+  },
+
+  // Ganti "database_id" di bawah dengan ID yang muncul setelah:
+  //   npx wrangler d1 create sipekasapa-db
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "sipekasapa",
+      "database_id": "f4c2b13e-d902-4a23-b2ca-1ad87dc63b10"
+    }
+  ]
+
+  /* Kredensial admin AWAL (sebelum diganti lewat menu Pengaturan) opsional
+     bisa diatur lewat Secret, JANGAN taruh di sini:
+       npx wrangler secret put ADMIN_USER
+       npx wrangler secret put ADMIN_PASS
+     Kalau dilewati, default awal adalah admin / admin123 — segera ganti
+     lewat menu Pengaturan setelah login pertama kali. */
+}

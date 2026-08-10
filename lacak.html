@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lacak Laporan - SIPEKA SAPA</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
+                    colors: {
+                        primary: '#F97316', 'primary-dark': '#EA580C', 'primary-light': '#FFEDD5',
+                        navy: '#123B78', 'navy-light': '#1B4B8F', 'navy-dark': '#0C2A57',
+                        surface: '#F8FAFC', success: '#16A34A', warning: '#F59E0B', danger: '#DC2626'
+                    },
+                    boxShadow: {
+                        soft: '0 4px 24px -4px rgba(18,59,120,0.10), 0 2px 8px -2px rgba(18,59,120,0.06)',
+                        glass: '0 8px 32px rgba(18,59,120,0.18)'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="antialiased min-h-screen text-slate-800">
+
+    <div class="min-h-screen flex flex-col fade-in relative">
+        <main class="flex-grow flex items-center justify-center p-6">
+            <div class="max-w-2xl w-full">
+                <a href="index.html" class="mb-6 flex items-center gap-2 text-slate-500 hover:text-primary transition-colors font-medium w-fit">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> Kembali
+                </a>
+                <div class="glass-panel p-8 rounded-3xl shadow-glass slide-up">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-9 h-9 bg-navy rounded-xl flex items-center justify-center text-white flex-shrink-0"><i data-lucide="search" class="w-4 h-4"></i></div>
+                        <h2 class="text-2xl font-bold text-navy">Lacak Laporan</h2>
+                    </div>
+                    <p class="text-slate-500 mb-6">Masukkan Nomor Tiket (ID Laporan) Anda untuk mengetahui status tindak lanjut.</p>
+
+                    <form onsubmit="searchLaporan(event)" class="flex flex-col md:flex-row gap-3 mb-6">
+                        <div class="relative flex-grow items-center">
+                            <i data-lucide="search" class="absolute left-4 top-3.5 text-slate-400 w-5 h-5"></i>
+                            <input type="text" id="trackInput" required class="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-200 bg-white/50 focus:bg-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder-slate-400 uppercase" placeholder="Misal: KS-001 atau PG-001">
+                        </div>
+                        <button type="submit" id="searchBtn" class="bg-navy hover:bg-navy-light text-white px-6 py-3 rounded-xl font-bold transition-all shadow-soft flex justify-center items-center gap-2">
+                            Cari
+                        </button>
+                    </form>
+
+                    <div id="track-error" class="hidden p-4 mb-4 bg-red-50 border border-red-100 rounded-xl text-danger text-sm flex items-center gap-3">
+                        <i data-lucide="alert-circle" class="w-5 h-5 flex-shrink-0"></i>
+                        <span>Laporan dengan Nomor Tiket tersebut tidak ditemukan. Pastikan nomor yang dimasukkan benar.</span>
+                    </div>
+
+                    <div id="track-result" class="hidden bg-white/80 border border-slate-200 p-6 rounded-2xl shadow-sm"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="toast"></div>
+
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/common.js"></script>
+    <script>
+        async function searchLaporan(e) {
+            e.preventDefault();
+            const inputId = document.getElementById('trackInput').value.trim().toUpperCase();
+            const resultContainer = document.getElementById('track-result');
+            const errorContainer = document.getElementById('track-error');
+            const searchBtn = document.getElementById('searchBtn');
+
+            resultContainer.classList.add('hidden');
+            errorContainer.classList.add('hidden');
+            searchBtn.disabled = true;
+            searchBtn.innerText = 'Mencari...';
+
+            try {
+                const result = await apiGet('getLaporan', { id: inputId });
+
+                if (result.success && result.data) {
+                    const laporan = result.data;
+                    const badgeColor = statusBadgeClass(laporan.statusData);
+
+                    let iconLayanan = laporan.jenis === 'Konsultasi' ? 'message-square' : 'alert-triangle';
+                    let colorLayanan = laporan.jenis === 'Konsultasi' ? 'text-primary' : 'text-navy';
+
+                    resultContainer.innerHTML = `
+                        <div class="flex justify-between items-start mb-4 pb-4 border-b border-slate-100">
+                            <div>
+                                <p class="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-1">Status Saat Ini</p>
+                                <span class="px-3 py-1 rounded-full text-sm font-bold ${badgeColor}">${laporan.statusData || 'Baru'}</span>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-1">Tanggal</p>
+                                <p class="text-sm font-medium text-slate-800">${formatDate(laporan.tanggal)}</p>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <i data-lucide="${iconLayanan}" class="w-4 h-4 ${colorLayanan}"></i>
+                                <h4 class="font-bold text-slate-800">${laporan.jenis}</h4>
+                            </div>
+                            <p class="text-sm text-slate-600 bg-slate-50 p-4 rounded-xl border border-slate-100">${laporan.pesan}</p>
+                        </div>
+                        ${laporan.tindakLanjut ? `
+                        <div class="mt-4">
+                            <h4 class="text-sm font-bold text-slate-800 mb-2 flex items-center gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-success"></i> Tanggapan / Tindak Lanjut:
+                            </h4>
+                            <p class="text-sm text-slate-700 bg-primary-light/40 p-4 rounded-xl border border-primary-light">${laporan.tindakLanjut}</p>
+                        </div>
+                        ` : `
+                        <div class="mt-4">
+                            <p class="text-sm text-slate-500 italic flex items-center gap-2">
+                                <i data-lucide="clock" class="w-4 h-4"></i> Belum ada tanggapan dari admin.
+                            </p>
+                        </div>
+                        `}
+                    `;
+                    lucide.createIcons();
+                    resultContainer.classList.remove('hidden');
+                } else {
+                    errorContainer.classList.remove('hidden');
+                }
+            } catch (err) {
+                showToast('Gagal', err.message, true);
+            } finally {
+                searchBtn.disabled = false;
+                searchBtn.innerText = 'Cari';
+            }
+        }
+    </script>
+</body>
+</html>

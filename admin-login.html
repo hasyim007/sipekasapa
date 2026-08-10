@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - SIPEKA SAPA</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
+                    colors: {
+                        primary: '#F97316', 'primary-dark': '#EA580C', 'primary-light': '#FFEDD5',
+                        navy: '#123B78', 'navy-light': '#1B4B8F', 'navy-dark': '#0C2A57',
+                        surface: '#F8FAFC', success: '#16A34A', warning: '#F59E0B', danger: '#DC2626'
+                    },
+                    boxShadow: {
+                        soft: '0 4px 24px -4px rgba(18,59,120,0.10), 0 2px 8px -2px rgba(18,59,120,0.06)',
+                        glass: '0 8px 32px rgba(18,59,120,0.18)'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="antialiased min-h-screen text-slate-800 flex items-center justify-center p-6" style="background: radial-gradient(circle at top right, rgba(18,59,120,0.06), transparent 60%), var(--surface);">
+
+    <div class="glass-panel relative z-10 w-full max-w-sm p-8 rounded-3xl shadow-glass slide-up">
+        <a href="index.html" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700"><i data-lucide="x" class="w-5 h-5"></i></a>
+        <div class="text-center mb-6">
+            <div class="w-12 h-12 bg-navy rounded-2xl mx-auto mb-3 flex items-center justify-center text-white shadow-soft"><i data-lucide="shield-check" class="w-6 h-6"></i></div>
+            <h3 class="text-xl font-bold text-navy">SIPEKA SAPA — Admin</h3>
+            <p class="text-xs text-slate-500 mt-1">Masuk untuk mengelola laporan</p>
+        </div>
+        <form onsubmit="handleLogin(event)" class="space-y-4">
+            <div>
+                <div class="relative flex items-center">
+                    <i data-lucide="user" class="absolute left-3 text-slate-400 w-5 h-5"></i>
+                    <input type="text" id="loginUsername" required placeholder="Username" class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 bg-white/50 focus:bg-white focus:ring-2 focus:ring-primary outline-none transition-all">
+                </div>
+            </div>
+            <div>
+                <div class="relative flex items-center">
+                    <i data-lucide="lock" class="absolute left-3 text-slate-400 w-5 h-5"></i>
+                    <input type="password" id="loginPassword" required placeholder="Password" class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 bg-white/50 focus:bg-white focus:ring-2 focus:ring-primary outline-none transition-all">
+                </div>
+            </div>
+            <div id="loginError" class="text-danger text-sm hidden text-center">Username atau Password salah!</div>
+            <button type="submit" id="loginBtn" class="w-full bg-navy hover:bg-navy-light text-white py-3 rounded-xl font-bold transition-all shadow-soft flex justify-center items-center gap-2">
+                Masuk
+            </button>
+        </form>
+    </div>
+
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/common.js"></script>
+    <script>
+        // Jika sudah login, langsung ke dashboard
+        if (sessionStorage.getItem('sipekasapa_admin_auth') === 'true') {
+            window.location.href = 'admin-dashboard.html';
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('loginUsername').value;
+            const pass = document.getElementById('loginPassword').value;
+            const loginBtn = document.getElementById('loginBtn');
+            const loginError = document.getElementById('loginError');
+            loginError.classList.add('hidden');
+            loginBtn.disabled = true;
+            loginBtn.innerText = 'Memeriksa...';
+
+            try {
+                const result = await apiPost('login', { username: user, password: pass });
+                if (result.success) {
+                    sessionStorage.setItem('sipekasapa_admin_auth', 'true');
+                    window.location.href = 'admin-dashboard.html';
+                } else {
+                    loginError.classList.remove('hidden');
+                }
+            } catch (err) {
+                loginError.innerText = err.message;
+                loginError.classList.remove('hidden');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.innerText = 'Masuk';
+            }
+        }
+    </script>
+</body>
+</html>

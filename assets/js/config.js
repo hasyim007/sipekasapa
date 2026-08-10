@@ -7,4 +7,4 @@
       .NAMA-AKUN.workers.dev), lalu tempel di bawah ini.
    ============================================================ */
 
-const API_URL = "PASTE_URL_CLOUDFLARE_WORKER_DI_SINI";
+const API_URL = "https://sipekasapa.sdn01papahan.workers.dev";

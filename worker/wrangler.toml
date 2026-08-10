@@ -1,0 +1,20 @@
+name = "sipekasapa"
+main = "src/index.js"
+compatibility_date = "2026-08-01"
+
+# Ganti "database_id" di bawah dengan ID yang muncul setelah Anda
+# menjalankan: wrangler d1 create sipekasapa-db
+[[d1_databases]]
+binding = "DB"
+database_name = "sipekasapa"
+database_id = "05c05914-c8dd-499c-82d5-faee9b20fb05"
+
+# Variabel non-rahasia (boleh diubah di sini). Untuk kredensial admin
+# (ADMIN_USER, ADMIN_PASS) JANGAN ditaruh di file ini — gunakan
+# `wrangler secret put ADMIN_USER` dan `wrangler secret put ADMIN_PASS`
+# supaya tidak ikut ter-commit ke Git.
+[vars]
+# Isi dengan origin GitHub Pages Anda, contoh:
+# "https://namauser.github.io"
+# Boleh lebih dari satu, dipisah koma. Gunakan "*" hanya untuk uji coba awal.
+ALLOWED_ORIGIN = "*"
